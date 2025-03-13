@@ -17,13 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\infrastructure\infrastructure.csproj" />
+    <ProjectReference Include="..\model\model.csproj" />
+    <ProjectReference Include="..\service\service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\infrastructure\infrastructure.csproj" />
-    <ProjectReference Include="..\..\model\model.csproj" />
-    <ProjectReference Include="..\..\service\service.csproj" />
-  </ItemGroup>
-
+ 
 </Project>
