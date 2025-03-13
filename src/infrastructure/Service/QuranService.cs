@@ -16,17 +16,19 @@ namespace infrastructure.Service
         }
 
         public async Task<ChatMessageContent> GetReponse(string query)
-        {
+         {
             if (!history.Any(_ => _.Content.StartsWith("use these biblical verses to generate your reponse", StringComparison.CurrentCultureIgnoreCase)))
             {
                 string verse = await _kernel.InvokeAsync<string>("HolyQuranPlugin", "SearchVerses", new() { ["query"] = query });
-                history.AddSystemMessage($"use these holy quarn verses to generate your reponse {verse}");
-            }         
-            history.Add(new ChatMessageContent { Role = AuthorRole.User,Content=query });
+
+                if (!string.IsNullOrEmpty(verse))
+                    history.AddSystemMessage($"use these holy quarn verses to generate your reponse {verse}");
+            }
+            history.Add(new ChatMessageContent { Role = AuthorRole.User, Content = query });
             var response = await _kernel.GetRequiredService<IChatCompletionService>().GetChatMessageContentAsync(history, kernel: _kernel);
             history.Add(new ChatMessageContent { Role = AuthorRole.Assistant, Content = response.Content });
 #pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-   
+
 #pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             return response;
         }
