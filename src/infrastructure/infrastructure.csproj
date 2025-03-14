@@ -15,9 +15,14 @@
 	<PackageReference Include="Microsoft.KernelMemory.DocumentStorage.AzureBlobs" Version="0.97.250211.1" />
 	<PackageReference Include="Microsoft.KernelMemory.MemoryDb.Redis" Version="0.97.250211.1" />
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.41.0" />
+		<PackageReference Include="Microsoft.SemanticKernel.Agents.Abstractions" Version="1.41.0-preview" />
+		<PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.41.0-preview" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.41.0" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Redis" Version="1.41.0-preview" />
-	
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.39.0-alpha" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Plugin\" />
 	</ItemGroup>
 
 </Project>
