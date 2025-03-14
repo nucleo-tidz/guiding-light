@@ -21,18 +21,20 @@ namespace infrastructure
         }
         public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IPastorService, QuranService>();
+            services.AddSingleton<IPastorService, ChristianService>();
             return  services.AddTransient<Kernel>(serviceProvider =>
              {
                  serviceProvider.GetRequiredService<IKernelMemory>();
                  IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
+
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                 //    kernelBuilder.Services.AddGoogleAIGeminiChatCompletion("gemini-2.0-flash", "AIzaSyB__RPh0X68ufHHPE9OLHnlSq4UDnz1z4c", serviceId: "gpt-4-turbo");
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
                  kernelBuilder.Services.AddAzureOpenAIChatCompletion("gpt-4o",
                     "https://ahmar-m7ohej9z-eastus2.cognitiveservices.azure.com/",
                     configuration["APIKey"],
                     "gpt-4o",
                     "gpt-4o");
-                 kernelBuilder.Plugins.AddFromObject(new BibleSearchPlugin(serviceProvider.GetRequiredService<IKernelMemory>()), "BibleSearchPlugin");
-                 kernelBuilder.Plugins.AddFromObject(new HolyQuranPlugin(serviceProvider.GetRequiredService<IKernelMemory>()), "HolyQuranPlugin");
                  return kernelBuilder.Build();
              });
          }

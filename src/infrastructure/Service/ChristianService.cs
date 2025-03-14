@@ -1,34 +1,73 @@
-﻿using Azure;
+﻿using infrastructure.Agents;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using System.Text;
 
 namespace infrastructure.Service
 {
+#pragma warning disable SKEXP0110
     public class ChristianService : IPastorService
     {
+        ChatCompletionAgent pastorAgent;
+        ChatCompletionAgent bibleAgent;
+        ChatCompletionAgent classifierAgent;
+        AgentGroupChat chat;
         Kernel _kernel;
-        ChatHistory history;
-        public ChristianService(Kernel kernel)
+        ChatHistory chatHistory;
+        IServiceProvider _serviceProvider;
+        public ChristianService(Kernel kernel, IServiceProvider serviceProvider)
         {
-            history = new ChatHistory();
+            chatHistory = new();
+            _serviceProvider = serviceProvider;
             _kernel = kernel;
-            history.Add(new ChatMessageContent { Role = AuthorRole.System, Content = "You are an AI Pastor, offering compassionate biblical guidance and pastoral counseling. Your role is to listen with empathy, as a caring pastor would during a confession, and provide thoughtful, scripture-based advice. Respond with wisdom, kindness, and encouragement, ensuring your guidance aligns with biblical teachings. If applicable, reference relevant Bible verses to support your response, but always prioritize a compassionate and understanding tone. Your goal is to comfort, guide, and uplift the user, addressing their concerns with faith-based wisdom." });
+            pastorAgent = new PastorAgentFactory().Create(_kernel, _serviceProvider);
+            bibleAgent = new BibleAgentFactory().Create(kernel, _serviceProvider);
+            classifierAgent = new ClassifierAgent().Create(kernel);
+            chatHistory.Add(new ChatMessageContent { Role = AuthorRole.System, Content = pastorAgent.Instructions });
+
         }
 
         public async Task<ChatMessageContent> GetReponse(string query)
         {
-            if (!history.Any(_ => _.Content.StartsWith("use these biblical verses to generate your reponse", StringComparison.CurrentCultureIgnoreCase)))
+            var history = new ChatHistory();
+            history.AddUserMessage(query);
+            chatHistory.AddMessage(authorRole: AuthorRole.User, query);
+            await foreach (var message in classifierAgent.InvokeAsync(history))
             {
-                string verse = await _kernel.InvokeAsync<string>("BibleSearchPlugin", "SearchVerses", new() { ["query"] = query });
-                history.AddSystemMessage($"use these biblical verses to generate your reponse {verse}");
-            }         
-            history.Add(new ChatMessageContent { Role = AuthorRole.User,Content=query });
-            var response = await _kernel.GetRequiredService<IChatCompletionService>().GetChatMessageContentAsync(history, kernel: _kernel);
-            history.Add(new ChatMessageContent { Role = AuthorRole.Assistant, Content = response.Content });
-#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-   
-#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            return response;
+                if (message.Content.Contains("1"))
+                {
+                    chatHistory.AddMessage(authorRole: AuthorRole.Assistant, await GetVesre());
+                }
+            }
+            string finalResponse = await Gethelp(history);
+            chatHistory.AddMessage(authorRole: AuthorRole.Assistant, finalResponse);
+            return null;
         }
+
+        private async Task<string> Gethelp(ChatHistory history)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            await foreach (var message in pastorAgent.InvokeAsync(history))
+            {
+                stringBuilder.Append(message.Content);
+            }
+            return stringBuilder.ToString();
+        }
+
+
+        private async Task<string> GetVesre()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("Response from Bible Expert");
+            await foreach (var vesre in bibleAgent.InvokeAsync(chatHistory))
+            {
+                stringBuilder.Append(vesre.Content);
+            }
+            return stringBuilder.ToString();
+        }
+        //https://medium.com/@akshaykokane09/step-by-step-guide-to-develop-ai-multi-agent-system-using-microsoft-semantic-kernel-and-gpt-4o-f5991af40ea6
+
     }
+#pragma warning restore SKEXP0110 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 }
