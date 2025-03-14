@@ -7,7 +7,7 @@ using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Microsoft.SemanticKernel.Connectors.Redis;
 using Microsoft.SemanticKernel;
-using infrastructure.Plugin;
+
 using System;
 using infrastructure.Service;
 
@@ -21,26 +21,27 @@ namespace infrastructure
         }
         public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IPastorService, ChristianService>();
+            services.AddSingleton<IPastorService, PastorService>();
+            services.AddSingleton<IBibleService, BibleService>();
             return  services.AddTransient<Kernel>(serviceProvider =>
              {
                  serviceProvider.GetRequiredService<IKernelMemory>();
                  IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
 
 #pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-                 //    kernelBuilder.Services.AddGoogleAIGeminiChatCompletion("gemini-2.0-flash", "AIzaSyB__RPh0X68ufHHPE9OLHnlSq4UDnz1z4c", serviceId: "gpt-4-turbo");
+                     kernelBuilder.Services.AddGoogleAIGeminiChatCompletion("gemini-2.0-flash", "AIzaSyB__RPh0X68ufHHPE9OLHnlSq4UDnz1z4c", serviceId: "gpt-4-turbo");
 #pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-                 kernelBuilder.Services.AddAzureOpenAIChatCompletion("gpt-4o",
-                    "https://ahmar-m7ohej9z-eastus2.cognitiveservices.azure.com/",
-                    configuration["APIKey"],
-                    "gpt-4o",
-                    "gpt-4o");
+                 //kernelBuilder.Services.AddAzureOpenAIChatCompletion("gpt-4o",
+                 //   "https://ahmar-m7ohej9z-eastus2.cognitiveservices.azure.com/",
+                 //   configuration["APIKey"],
+                 //   "gpt-4o",
+                 //   "gpt-4o");
                  return kernelBuilder.Build();
              });
          }
         public static IServiceCollection AddSemanticKernelMemory(this IServiceCollection services, IConfiguration configuration)
         {
-
+           
             return services.AddTransient(serviceProvider =>
             {
                 RedisConfig redisConfig = new RedisConfig

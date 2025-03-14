@@ -21,5 +21,8 @@
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Redis" Version="1.41.0-preview" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.39.0-alpha" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Plugin\" />
+	</ItemGroup>
 
 </Project>
