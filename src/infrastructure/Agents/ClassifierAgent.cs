@@ -1,21 +1,33 @@
-﻿using Microsoft.SemanticKernel;
+﻿using infrastructure.Constants;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace infrastructure.Agents
 {
-    public class ClassifierAgent
+    public class ClassifierAgent(Kernel kernel) : IClassifierAgent
     {
-        public ChatCompletionAgent Create(Kernel _kernel)
+        private ChatCompletionAgent Create()
         {
-            Kernel agentKernel = _kernel.Clone();
-
+            Kernel agentKernel = kernel.Clone();
             return
                 new ChatCompletionAgent()
                 {
                     Name = "ClassifierAgent",
-                    Instructions = "You are a classifier that determines whether an input is a confession or a question requiring a Bible verse for an answer, or if it is a normal question or a follow-up in an ongoing conversation. Respond with '1' if the input requires a Bible verse and '0' if it does not. Provide no additional text",
+                    Instructions = Persona.Classifier,
                     Kernel = agentKernel,
                 };
+        }
+        public async Task<string> Classify(string query)
+        {
+            var tempHistory = new ChatHistory();
+            tempHistory.AddUserMessage(query);
+            var agent = Create();
+            await foreach (var message in agent.InvokeAsync(tempHistory))
+            {
+                return message.Content;
+            }
+            return "0";
         }
     }
 }

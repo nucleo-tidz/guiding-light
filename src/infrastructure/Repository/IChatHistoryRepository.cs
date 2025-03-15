@@ -7,6 +7,6 @@ namespace infrastructure.Repository
     public interface IChatHistoryRepository
     {
         Task SaveChatMessageAsync(UserChatHistory userChatHistory);
-        Task<ChatHistory> GetChats(string userid, string sessionid);
+        Task<IEnumerable<UserChatHistory>> GetChats(string userid, string sessionid);
     }
 }

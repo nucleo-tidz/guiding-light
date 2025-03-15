@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSemanticKernelMemory(builder.Configuration)
-    .AddSemanticKernel(builder.Configuration);
+    .AddSemanticKernel(builder.Configuration).AddPastor();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
