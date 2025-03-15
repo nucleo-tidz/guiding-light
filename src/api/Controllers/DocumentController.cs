@@ -1,4 +1,5 @@
 ﻿using infrastructure.Service;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.KernelMemory;
@@ -14,11 +15,13 @@ namespace api.Controllers
     [ApiController]
     public class DocumentController(IKernelMemory kernelMemory, IPastorService pastor) : ControllerBase
     {
-        [HttpGet]
+        [HttpPost]
+        //[EnableCors]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Query(string query)
+        public async Task<IActionResult> Query([FromBody] QueryRequest queryRequest)
         {
-            return Ok();
+            var response = (await pastor.GetReponse(queryRequest.query, "Ahmar", "UI_Session")).Content;
+            return Ok(response);
         }
 
         [HttpPost("upload")]
@@ -27,6 +30,11 @@ namespace api.Controllers
             await kernelMemory.ImportDocumentAsync(file.OpenReadStream(), fileName: file.FileName, index: denominationName);
             return Created();
         }
+    }
+
+    public class QueryRequest
+    {
+        public string query { get; set; }
     }
 }
 
