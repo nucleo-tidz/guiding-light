@@ -22,7 +22,7 @@
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.39.0-alpha" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Plugin\" />
+	  <ProjectReference Include="..\model\model.csproj" />
 	</ItemGroup>
 
 </Project>

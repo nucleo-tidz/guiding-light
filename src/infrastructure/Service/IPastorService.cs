@@ -9,6 +9,6 @@ namespace infrastructure.Service
 {
     public interface IPastorService
     {
-        Task<ChatMessageContent> GetReponse(string query);
+        Task<ChatMessageContent> GetReponse(string query, string userId, string sessionId);
     }
 }
