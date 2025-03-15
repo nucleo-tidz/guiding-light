@@ -1,15 +1,9 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+﻿using infrastructure.Repository;
+using infrastructure.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
-using Microsoft.SemanticKernel.Memory;
-
-using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
-using Microsoft.SemanticKernel.Connectors.Redis;
 using Microsoft.SemanticKernel;
-
-using System;
-using infrastructure.Service;
 
 namespace infrastructure
 {
@@ -21,8 +15,9 @@ namespace infrastructure
         }
         public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IPastorService, PastorService>();
-            services.AddSingleton<IBibleService, BibleService>();
+            services.AddTransient<IChatHistoryRepository, ChatHistoryRepository>();
+            services.AddTransient<IPastorService, PastorService>();
+            services.AddTransient<IBibleService, BibleService>();
             return  services.AddTransient<Kernel>(serviceProvider =>
              {
                  serviceProvider.GetRequiredService<IKernelMemory>();

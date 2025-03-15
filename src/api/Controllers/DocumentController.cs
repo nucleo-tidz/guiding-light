@@ -18,9 +18,7 @@ namespace api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Query(string query)
         {
-
-            var message =await pastor.GetReponse(query);
-            return Ok(message.Content);
+            return Ok();
         }
 
         [HttpPost("upload")]
