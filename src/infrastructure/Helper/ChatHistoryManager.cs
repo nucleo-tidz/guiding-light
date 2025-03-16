@@ -7,13 +7,18 @@ namespace infrastructure.Helper
 {
     public class ChatHistoryManager(IChatHistoryRepository _chatHistoryRepository,Kernel kernel ) : IChatHistoryManager
     {
-        public async Task<ChatHistory> GetChatHistory(string userId, string sessionId, PersonaType personaType)
+        public async Task<ChatHistory> GetChatHistory(string userId, string sessionId, AgentType agentType)
         {
             ChatHistory chatHistory = new ChatHistory();
-            if (personaType == PersonaType.Pastor)
+            if (agentType == AgentType.Pastor)
             {
                 chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = Persona.Pastor });
             }
+            else if (agentType == AgentType.IslamicScholar)
+            {
+                chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = Persona.IslamicScholar });
+            }
+
             var savedHistory = await _chatHistoryRepository.GetChats(userId, sessionId);
             foreach (var history in savedHistory)
             {

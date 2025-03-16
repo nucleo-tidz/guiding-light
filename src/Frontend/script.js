@@ -18,13 +18,13 @@ $(document).ready(function() {
  
         // Send message to API
         $.ajax({
-            url: "https://localhost:7162/api/Document", // Replace with your REST API
+            url: "https://localhost:7162/api/expert/chat", // Replace with your REST API
             method: "POST",
             contentType: "application/json",
-            data:  JSON.stringify({ query: userMessage }),
+            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: "session_1", agent:1 }),
             crossDomain: true, 
             success: function(response) {
-                appendMessage("Pastor", response, "ai");
+                appendMessage("Expert", response, "ai");
             },
             error: function() {
                 appendMessage("AI", "Sorry, something went wrong!", "ai");

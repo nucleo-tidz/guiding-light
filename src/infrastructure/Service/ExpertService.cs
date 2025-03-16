@@ -8,39 +8,40 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace infrastructure.Service
 {
 #pragma warning disable SKEXP0110
-    public class PastorService : IPastorService
+    public class ExpertService : IExpertService
     {
 
-        private readonly IBibleService _bibleService;
+        private readonly IVerseService _verseService;
         private readonly IChatHistoryManager _chatHistorymanager;
-        private readonly ILogger<PastorService> _logger;
+        private readonly ILogger<ExpertService> _logger;
         private readonly IClassifierAgent _classifierAgent;
         private readonly IChatCompletionService _chatCompletionService;
 
-        public PastorService(Kernel kernel, IBibleService bibleService, IChatHistoryManager chatHistorymanager, ILogger<PastorService> logger, IClassifierAgent classifierAgent)
+        public ExpertService(Kernel kernel, IVerseService verseService, IChatHistoryManager chatHistorymanager, ILogger<ExpertService> logger, IClassifierAgent classifierAgent)
         {
-            _bibleService = bibleService ?? throw new ArgumentNullException(nameof(bibleService));
+            _verseService = verseService ?? throw new ArgumentNullException(nameof(verseService));
             _chatHistorymanager = chatHistorymanager ?? throw new ArgumentNullException(nameof(chatHistorymanager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _classifierAgent = classifierAgent;
             _chatCompletionService = kernel.GetRequiredService<IChatCompletionService>();
         }
 
-        public async Task<ChatMessageContent> GetReponse(string query, string userId, string sessionId)
+        public async Task<ChatMessageContent> GetReponse(string query, string userId, string sessionId,AgentType agentType)
         {
             try
             {
-                ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, PersonaType.Pastor);
-               
-                if ((await _classifierAgent.Classify(query)).Contains( "1"))
+                ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, agentType);
+                await _chatHistorymanager.Append(query, userId, sessionId, chatHistory, AuthorRole.User);
+
+                if ((await _classifierAgent.Classify(query, agentType)).Contains( "1"))
                 {
-                    var verse = await _bibleService.GetVerse(query);
+                    var verse = await _verseService.GetVerse(query, agentType);
                     if (!verse.Item2)
                     {
                         await _chatHistorymanager.Append(verse.Item1, userId, sessionId, chatHistory, AuthorRole.Assistant);
                     }
                 }
-                await _chatHistorymanager.Append(query, userId, sessionId, chatHistory, AuthorRole.User);
+               
                 var chatMessageContent = await _chatCompletionService.GetChatMessageContentAsync(chatHistory);
                 await _chatHistorymanager.Append(chatMessageContent.Content, userId, sessionId, chatHistory, AuthorRole.Assistant);
                 return chatMessageContent;
