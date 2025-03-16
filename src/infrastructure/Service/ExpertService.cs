@@ -33,14 +33,14 @@ namespace infrastructure.Service
                 ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, agentType);
                 await _chatHistorymanager.Append(query, userId, sessionId, chatHistory, AuthorRole.User);
 
-                if ((await _classifierAgent.Classify(query, agentType)).Contains( "1"))
-                {
-                    var verse = await _verseService.GetVerse(query, agentType);
-                    if (!verse.Item2)
-                    {
-                        await _chatHistorymanager.Append(verse.Item1, userId, sessionId, chatHistory, AuthorRole.Assistant);
-                    }
-                }
+                //if ((await _classifierAgent.Classify(query, agentType)).Contains( "1"))
+                //{
+                //    var verse = await _verseService.GetVerse(query, agentType);
+                //    if (!verse.Item2)
+                //    {
+                //        await _chatHistorymanager.Append(verse.Item1, userId, sessionId, chatHistory, AuthorRole.Assistant);
+                //    }
+                //}
                
                 var chatMessageContent = await _chatCompletionService.GetChatMessageContentAsync(chatHistory);
                 await _chatHistorymanager.Append(chatMessageContent.Content, userId, sessionId, chatHistory, AuthorRole.Assistant);

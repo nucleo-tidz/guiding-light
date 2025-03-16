@@ -9,6 +9,32 @@ $(document).ready(function() {
         }
     });
 
+    $("#ask-btn").click(function () {
+        Ask();
+    });
+
+    function Ask() {
+        let userMessage = $("#user-input").val().trim();
+        if (userMessage === "") return;
+
+        appendMessage("You", userMessage, "user");
+        $("#user-input").val("");
+
+        // Send message to API
+        $.ajax({
+            url: "https://localhost:7162/api/expert/ask-quran", // Replace with your REST API
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: "session_1", agent: 1 }),
+            crossDomain: true,
+            success: function (response) {
+                appendMessage("Quran", response, "ai");
+            },
+            error: function () {
+                appendMessage("AI", "Sorry, something went wrong!", "ai");
+            }
+        });
+    }
     function sendMessage() {
         let userMessage = $("#user-input").val().trim();
         if (userMessage === "") return;
