@@ -24,7 +24,7 @@ namespace infrastructure.Service
                 _ => await kernelMemory.AskAsync(query, index: "holybible")
             };
 
-            return ("Relevant Verses - " + searchResult.Result, searchResult.NoResult);
+            return (searchResult.Result, searchResult.NoResult);
         }
     }
 }

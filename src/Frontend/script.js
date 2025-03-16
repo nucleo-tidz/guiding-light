@@ -25,7 +25,7 @@ $(document).ready(function() {
             url: "https://localhost:7162/api/expert/ask-quran", // Replace with your REST API
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: "session_1", agent: 1 }),
+            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: localStorage.getItem("sessionId"), agent: parseInt(localStorage.getItem("userFaith")) }),
             crossDomain: true,
             success: function (response) {
                 appendMessage("Quran", response, "ai");
@@ -47,7 +47,7 @@ $(document).ready(function() {
             url: "https://localhost:7162/api/expert/chat", // Replace with your REST API
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: "session_1", agent:1 }),
+            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: localStorage.getItem("sessionId"), agent: parseInt(localStorage.getItem("userFaith")) }),
             crossDomain: true, 
             success: function(response) {
                 appendMessage("Expert", response, "ai");
