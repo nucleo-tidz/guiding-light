@@ -2,7 +2,7 @@ using infrastructure.Service;
 
 namespace client
 {
-    public class Worker(IPastorService pastorService) : BackgroundService
+    public class Worker(IExpertService pastorService) : BackgroundService
     {
         
 

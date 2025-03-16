@@ -7,23 +7,23 @@ namespace infrastructure.Agents
 {
     public class ClassifierAgent(Kernel kernel) : IClassifierAgent
     {
-        private ChatCompletionAgent Create()
+        private ChatCompletionAgent Create(AgentType agent)
         {
             Kernel agentKernel = kernel.Clone();
             return
                 new ChatCompletionAgent()
                 {
                     Name = "ClassifierAgent",
-                    Instructions = Persona.Classifier,
+                    Instructions = agent == AgentType.IslamicScholar ? Persona.IslamicScholar : Persona.Classifier,
                     Kernel = agentKernel,
                 };
         }
-        public async Task<string> Classify(string query)
+        public async Task<string> Classify(string query, AgentType agent)
         {
             var tempHistory = new ChatHistory();
             tempHistory.AddUserMessage(query);
-            var agent = Create();
-            await foreach (var message in agent.InvokeAsync(tempHistory))
+            var classifierAgent = Create(agent);
+            await foreach (var message in classifierAgent.InvokeAsync(tempHistory))
             {
                 return message.Content;
             }

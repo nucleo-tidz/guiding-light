@@ -38,8 +38,8 @@ namespace infrastructure
         public static  IServiceCollection AddPastor(this IServiceCollection services)
         {
             services.AddTransient<IChatHistoryRepository, ChatHistoryRepository>();
-            services.AddTransient<IPastorService, PastorService>();
-            services.AddTransient<IBibleService, BibleService>();
+            services.AddTransient<IExpertService, ExpertService>();
+            services.AddTransient<IVerseService, VerseService>();
             services.AddTransient<IChatHistoryManager, ChatHistoryManager>().AddTransient< IClassifierAgent,ClassifierAgent>();
             return services;
         }
