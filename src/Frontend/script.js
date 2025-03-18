@@ -35,27 +35,54 @@ $(document).ready(function() {
             }
         });
     }
+   
     function sendMessage() {
         let userMessage = $("#user-input").val().trim();
         if (userMessage === "") return;
 
         appendMessage("You", userMessage, "user");
         $("#user-input").val("");
- 
-        // Send message to API
-        $.ajax({
-            url: "https://localhost:7162/api/expert/chat", // Replace with your REST API
+
+        let sessionId = localStorage.getItem("sessionId");
+        let userFaith = parseInt(localStorage.getItem("userFaith"));
+
+        fetch("https://localhost:7162/api/expert/chat-stream", {
             method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: localStorage.getItem("sessionId"), agent: parseInt(localStorage.getItem("userFaith")) }),
-            crossDomain: true, 
-            success: function(response) {
-                appendMessage("Expert", response, "ai");
+            headers: {
+                "Content-Type": "application/json"
             },
-            error: function() {
+            body: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: sessionId, agent: userFaith })
+        })
+            .then(async (response) => {
+                if (!response.body) {
+                    throw new Error("No response body");
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let aiResponse = "";
+                let messageId = `message-${Date.now()}`;
+                $("#chat-box").append(`<div id="${messageId}" class="ai-message"><strong>Expert:</strong> <span></span></div>`);
+                let messageSpan = $(`#${messageId} span`);
+
+                async function readStream() {
+                    const { done, value } = await reader.read();
+                    if (done) return;
+
+                    let chunk = decoder.decode(value, { stream: true });
+                    aiResponse += chunk;
+
+                    // Append the new chunk to the existing message dynamically
+                    messageSpan.append(chunk);
+
+                    readStream(); // Read next chunk
+                }
+
+                readStream();
+            })
+            .catch(() => {
                 appendMessage("AI", "Sorry, something went wrong!", "ai");
-            }
-        });
+            });
     }
 
     function appendMessage(sender, message, type) {

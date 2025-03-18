@@ -2,6 +2,8 @@
 using infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.SemanticKernel;
+using System.Collections.Generic;
+using System.Text;
 
 namespace api.Controllers
 {
@@ -25,6 +27,18 @@ namespace api.Controllers
                 return Ok(response.Item1);
             return Ok("Sorry i could not find the answer of your quetion");
            
+        }
+        [HttpPost("chat-stream")]   
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Produces("text/plain")]
+        public async Task Chat([FromBody] ExpertChatRequest expertChatRequest)
+        {
+            Response.ContentType = "text/plain"; 
+            await foreach (var chunk in expertService.GetStreamingResponse(expertChatRequest.message, expertChatRequest.userid, expertChatRequest.sessionid, expertChatRequest.agent))
+            {
+                await Response.WriteAsync(chunk + " ");
+                await Response.Body.FlushAsync();
+            }
         }
     }
 }
