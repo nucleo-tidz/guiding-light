@@ -66,8 +66,8 @@ namespace infrastructure
                 {
                     APIType = AzureOpenAIConfig.APITypes.EmbeddingGeneration,
                     Auth = AzureOpenAIConfig.AuthTypes.APIKey,
-                    APIKey = configuration["APIKey"],
-                    Endpoint = "https://ahmar-m7ohej9z-eastus2.cognitiveservices.azure.com/",
+                    APIKey = configuration["EmbedderKey"],
+                    Endpoint = "https://nucle-m8l6686q-eastus.cognitiveservices.azure.com/",
                     Deployment = "vectoriser"
 
                 }).WithAzureOpenAITextGeneration(new AzureOpenAIConfig
@@ -75,7 +75,7 @@ namespace infrastructure
                     APIType = AzureOpenAIConfig.APITypes.ChatCompletion,
                     Auth = AzureOpenAIConfig.AuthTypes.APIKey,
                     APIKey = configuration["APIKey"],
-                    Endpoint = "https://ahmar-m7ohej9z-eastus2.cognitiveservices.azure.com/",
+                    Endpoint = "https://lighthouse-ai.openai.azure.com/",
                     Deployment = "gpt-4o"
                 })
                 .WithRedisMemoryDb(redisConfig);

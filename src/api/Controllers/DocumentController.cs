@@ -11,9 +11,9 @@ namespace api.Controllers
     {
        
         [HttpPost("upload")]
-        public async Task<IActionResult> Upload(IFormFile file, string denominationName)
+        public async Task<IActionResult> Upload(IFormFile file, string index)
         {
-            await kernelMemory.ImportDocumentAsync(file.OpenReadStream(), fileName: file.FileName, index: denominationName);
+            await kernelMemory.ImportDocumentAsync(file.OpenReadStream(), fileName: file.FileName, index: index);
             return Created();
         }
     }
