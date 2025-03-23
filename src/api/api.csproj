@@ -21,9 +21,5 @@
     <ProjectReference Include="..\model\model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Response\" />
-  </ItemGroup>
-
  
 </Project>
