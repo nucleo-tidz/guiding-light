@@ -11,11 +11,7 @@ namespace infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection Add(this IServiceCollection services, IConfiguration configuration)
-        {
-            return services;
-        }
-        public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
+            public static IServiceCollection AddSemanticKernel(this IServiceCollection services, IConfiguration configuration)
         {
         
             return services.AddTransient<Kernel>(serviceProvider =>
