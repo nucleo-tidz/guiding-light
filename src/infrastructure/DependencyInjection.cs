@@ -73,9 +73,13 @@ namespace infrastructure
                     APIKey = configuration["APIKey"],
                     Endpoint = "https://lighthouse-ai.openai.azure.com/",
                     Deployment = "gpt-4o"
-                })
-                .WithRedisMemoryDb(redisConfig);
-           
+                }).WithRedisMemoryDb(redisConfig);
+                //.WithQdrantMemoryDb(new QdrantConfig
+                //{
+                //    Endpoint = "http://localhost:6333",
+                //});
+
+
                 return memoryBuilder.Build();
             });
         }
