@@ -83,12 +83,12 @@ metadata:
   namespace: dev
 spec:
   ingressClassName: nginx
-  tls:
-  - hosts:
-    - guidinglight.centralindia.cloudapp.azure.com
-    secretName: nucelotidz-tls-secret
+  # tls:
+  # - hosts:
+  #   - nucleotidz-test.dev
+  #   secretName: nucelotidz-tls-ingress-secret
   rules:
-  - host: guidinglight.centralindia.cloudapp.azure.com
+  # - host: nucleotidz-test.dev
   - http:
       paths:
       - path: /
