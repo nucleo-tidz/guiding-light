@@ -10,8 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/api/api.csproj", "src/api/"]
-COPY ["infrastructure/infrastructure.csproj", "infrastructure/"]
-COPY ["model/model.csproj", "model/"]
+COPY ["src/api/infrastructure/infrastructure.csproj", "infrastructure/"]
+COPY ["src/api/model/model.csproj", "model/"]
 
 RUN dotnet restore "./src/api/./api.csproj"
 COPY . .
