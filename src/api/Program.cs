@@ -1,5 +1,7 @@
 using infrastructure;
 
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,7 +18,7 @@ builder.Services.AddCors(options =>
         policy => policy.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
-});
+}).AddHealthCheck();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,7 +31,19 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
-
+app.MapHealthChecks("/health/ready").AllowAnonymous();
+app.MapHealthChecks("/health/live").AllowAnonymous();
 app.MapControllers();
 
 app.Run();
+public static class DependecyInjection
+{
+    internal static IServiceCollection AddHealthCheck(this IServiceCollection self)
+    {
+
+        self.AddHealthChecks()
+             .AddCheck("Live Probe", _ => HealthCheckResult.Healthy());
+
+        return self;
+    }
+}
