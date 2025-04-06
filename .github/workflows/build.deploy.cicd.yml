@@ -15,6 +15,8 @@ env:
   docker-file-path: ./src/api/Dockerfile
   k8s-namespace: dev
   solution: ./api.sln
+  manifests-files: |
+    ./.github/kubernetes/apimanifest.yml
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,3 +45,41 @@ jobs:
       run: |
         docker build -f ${{ env.docker-file-path }} . -t nucleotidz.azurecr.io/nucleotidz/api:${{github.sha}}
         docker push nucleotidz.azurecr.io/nucleotidz/api:${{github.sha}}
+  deploy:
+      name: deploy to k8
+      runs-on: ubuntu-latest
+      environment: 'Test'
+      needs: build
+      steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+  
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v4
+        id: setcontext
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+  
+      - name: Set Image Pull Secret
+        uses: azure/k8s-create-secret@v4
+        id: create-secret
+        with:
+          namespace: ${{ env.k8s-namespace }}
+          container-registry-url: nucleotidz.azurecr.io
+          container-registry-username: nucleotidz
+          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+          secret-name: api-test
+  
+      - name: Deploy
+        uses: Azure/k8s-deploy@v4.6
+        with: 
+          namespace: ${{ env.k8s-namespace }}
+          manifests: |
+             ${{ env.manifests-files }}
+          images: |
+            nucleotidz.azurecr.io/nucleotidz/api:${{github.sha}}
+          imagepullsecrets: |
+            api-test

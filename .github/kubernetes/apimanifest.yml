@@ -1,0 +1,100 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: nucleotidz-api
+  labels:
+    app: nucleotidz-api
+    product: nucleotidz
+spec:
+ replicas: 1
+ revisionHistoryLimit: 3
+ progressDeadlineSeconds: 300
+ strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxSurge: 1
+     maxUnavailable: 0
+ selector:
+    matchLabels:
+      app: nucleotidz-api
+ template:
+    metadata:
+      labels:
+        app: nucleotidz-api
+        product: nucleotidz-api
+    spec:
+      securityContext:
+         runAsNonRoot:  true
+         fsGroup: 5000
+      containers:
+      - name: nucleotidz-api
+        image:  nucleotidz.azurecr.io/nucleotidz/api
+        imagePullPolicy: Always
+        ports:
+            - containerPort: 8080
+              name: api
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 2000
+        resources:
+          limits:
+           cpu: 30m
+           memory: 64Mi
+          requests:
+           cpu: 20m
+           memory: 32Mi
+        readinessProbe: 
+          httpGet:
+           path: /health/ready
+           port: 8080
+          initialDelaySeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 60
+          periodSeconds: 60
+        livenessProbe: #Failing liveness probe will restart the container.
+         httpGet:
+          path: /health/live
+          port: 8080
+         initialDelaySeconds: 30
+         failureThreshold: 3
+         timeoutSeconds: 60
+         periodSeconds: 60
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nucleotidz-api-service
+  namespace: dev
+  labels:
+    app: nucleotidz-api
+spec:
+  type: ClusterIP
+  selector:
+    app: nucleotidz-api
+  ports:
+    - port: 5000
+      targetPort: "api"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nucleotidz-api-ingress
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - nucleotidz-test.dev
+  #   secretName: nucelotidz-tls-ingress-secret
+  rules:
+  # - host: nucleotidz-test.dev
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nucleotidz-api-service
+            port:
+              number: 5000
