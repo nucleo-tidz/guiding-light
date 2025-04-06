@@ -14,7 +14,7 @@ env:
   DOTNET_VERSION: '8.0.*'
   docker-file-path: ./src/api/Dockerfile
   k8s-namespace: dev
-  solution: ./src/api.sln
+  solution: ./api.sln
 jobs:
   build:
     runs-on: ubuntu-latest
