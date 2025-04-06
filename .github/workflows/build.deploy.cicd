@@ -1,0 +1,45 @@
+name: build.deploy.cicd
+
+on:
+
+  workflow_dispatch:
+   inputs:
+    enableManualDeployement :
+      description: 'Click to enable manual deployment'
+      default: false
+      required: true
+      type: boolean
+
+env:  
+  DOTNET_VERSION: '8.0.*'
+  docker-file-path: ./src/api/Dockerfile
+  k8s-namespace: dev
+  solution: ./src/api.sln
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: 'Test'
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: build
+      run: |
+          dotnet restore $solution
+          dotnet build $solution --configuration Release
+  
+    - name: Login container registry        
+      uses: docker/login-action@v2.1.0
+      with:
+          registry: nucleotidz.azurecr.io
+          username: nucleotidz
+          password: ${{secrets.ACR_PASSWORD}}
+    
+    - name: Push to container registry
+      run: |
+        docker build -f ${{ env.docker-file-path }} . -t nucleotidz.azurecr.io/nucleotidz/api:${{github.sha}}
+        docker push nucleotidz.azurecr.io/nucleotidz/api:${{github.sha}}
