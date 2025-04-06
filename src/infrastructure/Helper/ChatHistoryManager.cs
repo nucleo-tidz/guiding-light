@@ -12,7 +12,7 @@ namespace infrastructure.Helper
             ChatHistory chatHistory = new ChatHistory();
             if (agentType == AgentType.Pastor)
             {
-                chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = Persona.Pastor });
+                chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = string.IsNullOrEmpty(ragOutput) ? Persona.Pastor : Persona.Pastor + $", Use the provided ragoutput to support your answer ,ragoutput  - {ragOutput}" });
             }
             else if (agentType == AgentType.IslamicScholar)
             {
