@@ -7,7 +7,7 @@ namespace infrastructure.Helper
 {
     public class ChatHistoryManager(IChatHistoryRepository _chatHistoryRepository,Kernel kernel ) : IChatHistoryManager
     {
-        public async Task<ChatHistory> GetChatHistory(string userId, string sessionId, AgentType agentType)
+        public async Task<ChatHistory> GetChatHistory(string userId, string sessionId, AgentType agentType, string? ragOutput = null)
         {
             ChatHistory chatHistory = new ChatHistory();
             if (agentType == AgentType.Pastor)
@@ -16,7 +16,7 @@ namespace infrastructure.Helper
             }
             else if (agentType == AgentType.IslamicScholar)
             {
-                chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = Persona.IslamicScholar });
+                chatHistory.Add(new Microsoft.SemanticKernel.ChatMessageContent { Role = AuthorRole.System, Content = string.IsNullOrEmpty(ragOutput) ? Persona.IslamicScholar : Persona.IslamicScholar + $", Use the provided ragoutput to support your answer ,ragoutput  - {ragOutput}" });
             }
 
             var savedHistory = await _chatHistoryRepository.GetChats(userId, sessionId);

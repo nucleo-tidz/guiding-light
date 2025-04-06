@@ -9,11 +9,11 @@ namespace infrastructure.Service
         {
             MemoryAnswer searchResult = agentType switch
             {
-                AgentType.IslamicScholar => await kernelMemory.AskAsync($"Find only the verse names from the holy quran to help answer user query , do not include any decsription of the vesre , user query - {query}", index: "quran"),
-                _ => await kernelMemory.AskAsync($"Find only the verse names from bible to help answer , do not include any decsription of the vesre - {query}", index: "holybible")
+                AgentType.IslamicScholar => await kernelMemory.AskAsync($"Give very breif answer limit it to 100 words only for the user query ,iclude citations, user query - {query}", index: "quran"),
+                _ => await kernelMemory.AskAsync($"Give very breif answer limit it to 100 words only for the user query ,iclude citations, user query - {query}", index: "holybible")
             };
 
-            return ("Relevant Verses - " + searchResult.Result, searchResult.NoResult);
+            return (searchResult.Result, searchResult.NoResult);
         }
 
         public async Task<(string, bool)> Ask(string query, AgentType agentType)

@@ -29,18 +29,18 @@ namespace infrastructure.Service
         }
         public async IAsyncEnumerable<string> GetStreamingResponse(string query, string userId, string sessionId, AgentType agentType)
         {
-
-            ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, agentType);
+            string RagOutput=string.Empty;
+            if ((await _classifierAgent.Classify(query, agentType)).Contains("1"))
+            {
+                var verse = await _verseService.GetVerse(query, agentType);
+                if (!verse.Item2)
+                {
+                    RagOutput = verse.Item1;
+                }
+            }
+            ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, agentType, RagOutput);
             await _chatHistorymanager.Append(query, userId, sessionId, chatHistory, AuthorRole.User);
-            //if ((await _classifierAgent.Classify(query, agentType)).Contains( "1"))
-            //{
-            //    var verse = await _verseService.GetVerse(query, agentType);
-            //    if (!verse.Item2)
-            //    {
-            //        await _chatHistorymanager.Append(verse.Item1, userId, sessionId, chatHistory, AuthorRole.Assistant);
-            //    }
-            //}
-
+           
             StringBuilder assistantResponseBuilder = new();
 
             await foreach (var chunk in _chatCompletionService.GetStreamingChatMessageContentsAsync(chatHistory))
