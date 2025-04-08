@@ -22,7 +22,7 @@ $(document).ready(function() {
 
         // Send message to API
         $.ajax({
-            url: "https://lighthouse.centralindia.cloudapp.azure.com/api/expert/ask-quran1", // Replace with your REST API
+            url: "https://lighthouse.centralindia.cloudapp.azure.com/api/expert/ask-quran", // Replace with your REST API
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: localStorage.getItem("sessionId"), agent: parseInt(localStorage.getItem("userFaith")) }),
