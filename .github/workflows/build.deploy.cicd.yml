@@ -1,7 +1,9 @@
 name: build.deploy.cicd
 
 on:
-
+  push:
+    branches:
+    - main
   workflow_dispatch:
    inputs:
     enableManualDeployement :
@@ -44,7 +46,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: 'https://nucelotidz-dev.vault.azure.net/'
-        secrets: '*'
+        secrets: 'EmbedderKey,APIKey'
 
     - name: Replace Tokens
       uses: cschleiden/replace-tokens@v1.3
