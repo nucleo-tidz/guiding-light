@@ -1,12 +1,17 @@
-FROM nginx:alpine
+﻿FROM nginx:alpine
+
+# Remove default config (optional if you're using your own)
 RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy your static files
 COPY . /usr/share/nginx/html
-COPY . /usr/share/nginx/html
 
-# Change permissions so NGINX can write to cache dirs
-RUN chmod -R 755 /var/cache/nginx /usr/share/nginx/html
+# Optional: copy your own nginx.conf
+# COPY nginx.conf /etc/nginx/nginx.conf
 
-# Make sure user has permission
-USER 0
+# Make sure NGINX can write to required paths
+RUN mkdir -p /var/run /var/cache/nginx && \
+    chmod -R 777 /var/run /var/cache/nginx /usr/share/nginx/html
 
-#EXPOSE 80
+# 👇 This forces it to run as root
+USER root
