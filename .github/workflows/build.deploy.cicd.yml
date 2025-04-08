@@ -46,7 +46,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: 'nucelotidz-dev'
-        secrets: 'EmbedderKey,APIKey,GeminiKey,QdrantKey,nucleotidz,AzureBlobStorage'
+        secrets: 'EmbedderKey,APIKey,GeminiKey,QdrantKey,nucleotidzdb,AzureBlobStorage'
 
     - name: Replace Tokens
       uses: cschleiden/replace-tokens@v1.3
@@ -57,7 +57,7 @@ jobs:
         APIKey: ${{ steps.secrets.outputs.APIKey }} 
         GeminiKey: ${{ steps.secrets.outputs.GeminiKey }} 
         QdrantKey: ${{ steps.secrets.outputs.QdrantKey }} 
-        nucleotidz: ${{ steps.secrets.outputs.nucleotidz }}
+        nucleotidzdb: ${{ steps.secrets.outputs.nucleotidzdb }}
         AzureBlobStorage: ${{ steps.secrets.outputs.AzureBlobStorage }} 
 
     - name: Login container registry        
