@@ -76,8 +76,8 @@ spec:
   # - host: nucleotidz-test.dev
   - http:
       paths:
-      - path: /ui
-        pathType: Prefix
+      - path:  /(ui\/.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: nucleotidz-ui-service
