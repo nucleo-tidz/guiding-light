@@ -1,0 +1,75 @@
+name: build.deploy.cicd
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+   inputs:
+    enableManualDeployement :
+      description: 'Click to enable manual deployment'
+      default: false
+      required: true
+      type: boolean
+
+env:  
+  DOTNET_VERSION: '8.0.*'
+  docker-file-path: ./docs/Dockerfile
+  k8s-namespace: dev
+  manifests-files: |
+    ./.github/kubernetes/uimanifest.yml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: 'Test'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login container registry        
+      uses: docker/login-action@v2.1.0
+      with:
+          registry: nucleotidz.azurecr.io
+          username: nucleotidz
+          password: ${{secrets.ACR_PASSWORD}}
+    
+    - name: Push to container registry
+      run: |
+        docker build -f ${{ env.docker-file-path }} . -t nucleotidz.azurecr.io/nucleotidz/ui:${{github.sha}}
+        docker push nucleotidz.azurecr.io/nucleotidz/ui:${{github.sha}}
+  deploy:
+      name: deploy to k8
+      runs-on: ubuntu-latest
+      environment: 'Test'
+      needs: build
+      steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+  
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v4
+        id: setcontext
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+  
+      - name: Set Image Pull Secret
+        uses: azure/k8s-create-secret@v4
+        id: create-secret
+        with:
+          namespace: ${{ env.k8s-namespace }}
+          container-registry-url: nucleotidz.azurecr.io
+          container-registry-username: nucleotidz
+          container-registry-password: ${{ secrets.ACR_PASSWORD }}
+          secret-name: ui-test
+  
+      - name: Deploy
+        uses: Azure/k8s-deploy@v4.6
+        with: 
+          namespace: ${{ env.k8s-namespace }}
+          manifests: |
+             ${{ env.manifests-files }}
+          images: |
+            nucleotidz.azurecr.io/nucleotidz/ui:${{github.sha}}
+          imagepullsecrets: |
+            ui-test

@@ -1,0 +1,85 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: nucleotidz-ui
+  labels:
+    app: nucleotidz-ui
+    product: nucleotidz
+spec:
+ replicas: 1
+ revisionHistoryLimit: 3
+ progressDeadlineSeconds: 300
+ strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxSurge: 1
+     maxUnavailable: 0
+ selector:
+    matchLabels:
+      app: nucleotidz-ui
+ template:
+    metadata:
+      labels:
+        app: nucleotidz-ui
+        product: nucleotidz-ui
+    spec:
+      securityContext:
+         runAsNonRoot:  true
+         fsGroup: 5000
+      containers:
+      - name: nucleotidz-ui
+        image:  nucleotidz.azurecr.io/nucleotidz/ui
+        imagePullPolicy: Always
+        ports:
+            - containerPort: 8080
+              name: ui
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 2000
+        resources:
+          limits:
+           cpu: 30m
+           memory: 64Mi
+          requests:
+           cpu: 20m
+           memory: 32Mi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nucleotidz-ui-service
+  namespace: dev
+  labels:
+    app: nucleotidz-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: nucleotidz-ui
+  ports:
+    - port: 5000
+      targetPort: "ui"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nucleotidz-ui-ingress-test
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  # tls:
+  # - hosts:
+  #   - nucleotidz-test.dev
+  #   secretName: nucelotidz-tls-ingress-secret
+  rules:
+  # - host: nucleotidz-test.dev
+  - http:
+      paths:
+      - path: /ui
+        pathType: Prefix
+        backend:
+          service:
+            name: nucleotidz-ui-service
+            port:
+              number: 5000
