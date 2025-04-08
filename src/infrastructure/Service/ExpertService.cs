@@ -30,14 +30,14 @@ namespace infrastructure.Service
         public async IAsyncEnumerable<string> GetStreamingResponse(string query, string userId, string sessionId, AgentType agentType)
         {
             string RagOutput=string.Empty;
-            if ((await _classifierAgent.Classify(query, agentType)).Contains("1"))
-            {
-                var verse = await _verseService.GetVerse(query, agentType);
-                if (!verse.Item2)
-                {
-                    RagOutput = verse.Item1;
-                }
-            }
+            //if ((await _classifierAgent.Classify(query, agentType)).Contains("1"))
+            //{
+            //    var verse = await _verseService.GetVerse(query, agentType);
+            //    if (!verse.Item2)
+            //    {
+            //        RagOutput = verse.Item1;
+            //    }
+            //}
             ChatHistory chatHistory = await _chatHistorymanager.GetChatHistory(userId, sessionId, agentType, RagOutput);
             await _chatHistorymanager.Append(query, userId, sessionId, chatHistory, AuthorRole.User);
            
