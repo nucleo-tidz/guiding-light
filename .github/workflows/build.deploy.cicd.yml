@@ -45,8 +45,8 @@ jobs:
       id: secrets
       uses: Azure/get-keyvault-secrets@v1
       with:
-        keyvault: 'https://nucelotidz-dev.vault.azure.net/'
-        secrets: 'EmbedderKey,APIKey'
+        keyvault: 'nucelotidz-dev'
+        secrets: 'EmbedderKey,APIKey,GeminiKey,QdrantKey,nucleotidz,AzureBlobStorage'
 
     - name: Replace Tokens
       uses: cschleiden/replace-tokens@v1.3
