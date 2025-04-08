@@ -22,7 +22,7 @@ $(document).ready(function() {
 
         // Send message to API
         $.ajax({
-            url: "http://lighthouse.centralindia.cloudapp.azure.com/api/expert/ask-quran", // Replace with your REST API
+            url: "http://lighthouse.centralindia.cloudapp.azure.com/api/expert/ask-quran1", // Replace with your REST API
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({ message: userMessage, userid: "ahmar", sessionid: localStorage.getItem("sessionId"), agent: parseInt(localStorage.getItem("userFaith")) }),
@@ -30,8 +30,9 @@ $(document).ready(function() {
             success: function (response) {
                 appendMessage("Quran", response, "ai");
             },
-            error: function () {
+            error: function (e,) {
                 appendMessage("AI", "Sorry, something went wrong!", "ai");
+                alert(e.statusText + error)
             }
         });
     }
