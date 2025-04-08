@@ -76,10 +76,10 @@ spec:
   # - host: nucleotidz-test.dev
   - http:
       paths:
-      - path: /(ui\/.*)
+      - path: /ui/
         pathType: Prefix
         backend:
           service:
             name: nucleotidz-ui-service
             port:
-              number: 5000
+              number: 80

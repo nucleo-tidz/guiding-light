@@ -15,3 +15,4 @@ RUN mkdir -p /var/run /var/cache/nginx && \
 
 # 👇 This forces it to run as root
 USER root
+EXPOSE 80
