@@ -6,7 +6,7 @@ metadata:
     app: nucleotidz-api
     product: nucleotidz
 spec:
- replicas: 1
+ replicas: 4
  revisionHistoryLimit: 3
  progressDeadlineSeconds: 300
  strategy:
@@ -38,11 +38,11 @@ spec:
           runAsGroup: 2000
         resources:
           limits:
-           cpu: 30m
-           memory: 64Mi
+           cpu: 200m
+           memory: 512Mi
           requests:
-           cpu: 20m
-           memory: 32Mi
+           cpu: 100m
+           memory: 256Mi
         readinessProbe: 
           httpGet:
            path: /health/ready
