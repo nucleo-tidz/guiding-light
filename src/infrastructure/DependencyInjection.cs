@@ -76,7 +76,8 @@ namespace infrastructure
                 })//.WithRedisMemoryDb(redisConfig);
                 .WithQdrantMemoryDb(new QdrantConfig
                 {
-                    Endpoint = "http://localhost:6333",
+                    Endpoint = "https://177ca4a2-5271-4a0f-8cd9-2c0e0d407cc8.europe-west3-0.gcp.cloud.qdrant.io",
+                    APIKey= configuration["QdrantKey"]
                 });
 
 

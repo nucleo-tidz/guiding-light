@@ -33,7 +33,31 @@ jobs:
       run: |
           dotnet restore $solution
           dotnet build $solution --configuration Release
-  
+
+    - name: az login
+      uses: azure/login@v1
+      with:
+        creds: '{"clientId":"${{ secrets.clientId }}","clientSecret":"${{ secrets.clientSecret }}","subscriptionId":"${{ secrets.subscriptionId }}","tenantId":"eaf4a4cd-97f4-477a-8d21-50da33ef2a64"}'
+
+    - name: Fetch secrets from KeyVault
+      id: secrets
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: 'https://nucelotidz-dev.vault.azure.net/'
+        secrets: '*'
+
+    - name: Replace Tokens
+      uses: cschleiden/replace-tokens@v1.3
+      with:
+        files: ./src/api/appsettings.json
+      env:
+        EmbedderKey: ${{ steps.secrets.outputs.EmbedderKey }}
+        APIKey: ${{ steps.secrets.outputs.APIKey }} 
+        GeminiKey: ${{ steps.secrets.outputs.GeminiKey }} 
+        QdrantKey: ${{ steps.secrets.outputs.QdrantKey }} 
+        nucleotidz: ${{ steps.secrets.outputs.nucleotidz }}
+        AzureBlobStorage: ${{ steps.secrets.outputs.AzureBlobStorage }} 
+
     - name: Login container registry        
       uses: docker/login-action@v2.1.0
       with:
