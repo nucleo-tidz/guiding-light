@@ -76,7 +76,7 @@ spec:
   # - host: nucleotidz-test.dev
   - http:
       paths:
-      - path: /ui
+      - path: /ui/(.*)
         pathType: Prefix
         backend:
           service:
