@@ -32,7 +32,7 @@ $(document).ready(function() {
             },
             error: function (e,) {
                 appendMessage("AI", "Sorry, something went wrong!", "ai");
-                alert(e.statusText + error)
+           
             }
         });
     }
