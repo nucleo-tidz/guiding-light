@@ -18,5 +18,4 @@
 #EXPOSE 80
 
 FROM nginxinc/nginx-unprivileged:1.27.0-alpine
-COPY default.conf /etc/nginx/conf.d/default.conf
 COPY . /usr/share/nginx/html
